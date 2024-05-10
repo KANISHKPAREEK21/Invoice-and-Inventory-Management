@@ -32,31 +32,33 @@ class ProductForm(forms.ModelForm):
         }
 
 
-# class CustomerForm(forms.ModelForm):
-#     class Meta:
-#         model = Customer
-#         fields = [
-#             'customer_name',
-#             'customer_gender',
-#             'customer_dob',
-#         ]
-#         widgets = {
-#             'customer_name': forms.TextInput(attrs={
-#                 'class': 'form-control',
-#                 'id': 'customer_name',
-#                 'placeholder': 'Enter name of the customer',
-#             }),
-#             'customer_gender': forms.Select(attrs={
-#                 'class': 'form-control',
-#                 'id': 'customer_gender',
-#             }),
-#             'customer_dob': forms.DateInput(attrs={
-#                 'class': 'form-control',
-#                 'id': 'customer_dob',
-#                 'placeholder': '2000-01-01',
-#                 'type': 'date',
-#             }),
-#         }
+        # this is commented
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = [
+            'customer_name',
+            'customer_gender',
+            'customer_dob',
+        ]
+        widgets = {
+            'customer_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'customer_name',
+                'placeholder': 'Enter name of the customer',
+            }),
+            'customer_gender': forms.Select(attrs={
+                'class': 'form-control',
+                'id': 'customer_gender',
+            }),
+            'customer_dob': forms.DateInput(attrs={
+                'class': 'form-control',
+                'id': 'customer_dob',
+                'placeholder': '2000-01-01',
+                'type': 'date',
+            }),
+        }
+        # this is commented
 
 
 class InvoiceForm(forms.ModelForm):

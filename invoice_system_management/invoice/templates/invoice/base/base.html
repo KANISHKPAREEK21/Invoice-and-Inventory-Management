@@ -23,7 +23,8 @@
     <link href="{% static '/css/sb-admin-2.min.css' %}" rel="stylesheet">
 
     <!-- FontAwesome Icons -->
-    <script src="{% static 'https://kit.fontawesome.com/d0715debc1.js' %}" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/d0715debc1.js" crossorigin="anonymous"></script>
+    <!-- <script src="{% static 'https://kit.fontawesome.com/d0715debc1.js' %}" crossorigin="anonymous"></script> -->
 
 </head>
 
@@ -74,7 +75,7 @@
             </li>
 
             <!-- Nav Item - Utilities Collapse Menu -->
-            {% comment %} <li class="nav-item">
+            {% comment %} {% endcomment %} <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                     aria-expanded="true" aria-controls="collapseUtilities">
                     <i class="fas fa-user-circle"></i>
@@ -87,7 +88,7 @@
                         <a class="collapse-item" href="{% url 'view_customer' %}">View</a>
                     </div>
                 </div>
-            </li> {% endcomment %}
+            </li> {% comment %} {% endcomment %}
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
@@ -165,7 +166,7 @@
                         </div>
 
                         <!-- Earnings (Monthly) Card Example -->
-                        {% comment %} <div class="col-xl-3 col-md-6 mb-4">
+                        {% comment %} {% endcomment %} <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-success shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
@@ -181,7 +182,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div> {% endcomment %}
+                        </div> {% comment %} {% endcomment %}
 
                         <!-- Earnings (Monthly) Card Example -->
                         <div class="col-xl-3 col-md-6 mb-4">

@@ -13,15 +13,9 @@ class Product(models.Model):
 
         # this is commented
 class Customer(models.Model):
-    GENDER_CHOICES = (
-        ('Male', 'Male'),
-        ('Female', 'Female'),
-        ('Others', 'Others'),
-    )
     customer_name = models.CharField(max_length=255)
-    customer_gender = models.CharField(max_length=50, choices=GENDER_CHOICES)
-    customer_dob = models.DateField()
-    customer_points = models.IntegerField(default=0)
+    customer_contact = models.CharField(max_length=255)
+    customer_amount = models.IntegerField(default=0)
 
     def __str__(self):
         return str(self.customer_name)

@@ -10,7 +10,7 @@ class ProductAdmin(admin.ModelAdmin):
 # this is comment
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ['id', 'customer_name',
-                    'customer_gender', 'customer_dob', 'customer_points']
+                    'customer_amount', 'customer_contact']
 # this is comment
 
 

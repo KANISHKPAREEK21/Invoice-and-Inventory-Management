@@ -38,24 +38,13 @@ class CustomerForm(forms.ModelForm):
         model = Customer
         fields = [
             'customer_name',
-            'customer_gender',
-            'customer_dob',
+            'customer_contact',
         ]
         widgets = {
             'customer_name': forms.TextInput(attrs={
                 'class': 'form-control',
                 'id': 'customer_name',
                 'placeholder': 'Enter name of the customer',
-            }),
-            'customer_gender': forms.Select(attrs={
-                'class': 'form-control',
-                'id': 'customer_gender',
-            }),
-            'customer_dob': forms.DateInput(attrs={
-                'class': 'form-control',
-                'id': 'customer_dob',
-                'placeholder': '2000-01-01',
-                'type': 'date',
             }),
         }
         # this is commented

@@ -3,9 +3,7 @@ from django.shortcuts import render, redirect
 
 from utils.filehandler import handle_file_upload
 
-from django.http import FileResponse
-from reportlab.pdfgen import canvas
-# pip install reportlab
+from pypdf import PdfReader 
     
 from .forms import *
 from .models import *
@@ -65,8 +63,8 @@ def download_all(request):
 
     }
     for curr in allInvoiceDetails:
-        invoice = Invoice.objects.get(id=curr.invoice_id)
-        product = Product.objects.get(id=curr.product_id)
+        invoice = Invoice.objects.get(id=curr.values()['id'])
+        product = Product.objects.get(id=curr.values()['product_id'])
         invoiceAndProduct["invoice_id"].append(invoice.id)
         invoiceAndProduct["invoice_date"].append(invoice.date)
         invoiceAndProduct["invoice_customer"].append(invoice.customer)

@@ -17,9 +17,8 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
-                                <th>Gender</th>
-                                <th>Date of birth</th>
-                                <th>Points</th>
+                                <th>Contact</th>
+                                <th>Amount</th>
                                 <th>Edit</th>
                                 <th>Delete</th>
                             </tr>
@@ -29,9 +28,8 @@
                             <tr>
                                 <td style="padding: 0.45em;">{{i.id}}</td>
                                 <td style="padding: 0.45em;">{{i.customer_name}}</td>
-                                <td style="padding: 0.45em;">{{i.customer_gender}}</td>
-                                <td style="padding: 0.45em;">{{i.customer_dob}}</td>
-                                <td style="padding: 0.45em;">{{i.customer_points}}</td>
+                                <td style="padding: 0.45em;">{{i.customer_contact}}</td>
+                                <td style="padding: 0.45em;">{{i.customer_amount}}</td>
                                 <td style="padding: 0;">
                                     <a href="{% url 'edit_customer' i.id %}" class="btn btn-outline-primary"
                                        style="width: 100%; height: 100%; border-radius: 0">

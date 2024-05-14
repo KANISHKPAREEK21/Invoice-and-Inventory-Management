@@ -3,9 +3,7 @@ from django.shortcuts import render, redirect
 
 from utils.filehandler import handle_file_upload
 
-from django.http import FileResponse
-from reportlab.pdfgen import canvas
-# pip install reportlab
+from pypdf import PdfReader 
     
 from .forms import *
 from .models import *
@@ -24,12 +22,20 @@ def getTotalIncome():
 
 def base(request):
     total_product = Product.objects.count()
-    # total_customer = Customer.objects.count()
+
+    # this is commented
+    total_customer = Customer.objects.count()
+    # this is commented
+
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
     context = {
         "total_product": total_product,
-        # "total_customer": total_customer,
+
+        # this is commented
+        "total_customer": total_customer,
+        # this is commented
+
         "total_invoice": total_invoice,
         "total_income": total_income,
     }
@@ -57,8 +63,8 @@ def download_all(request):
 
     }
     for curr in allInvoiceDetails:
-        invoice = Invoice.objects.get(id=curr.invoice_id)
-        product = Product.objects.get(id=curr.product_id)
+        invoice = Invoice.objects.get(id=curr.values()['id'])
+        product = Product.objects.get(id=curr.values()['product_id'])
         invoiceAndProduct["invoice_id"].append(invoice.id)
         invoiceAndProduct["invoice_date"].append(invoice.date)
         invoiceAndProduct["invoice_customer"].append(invoice.customer)
@@ -88,8 +94,11 @@ def download_invoice_detail(request , pk):
     # total_product = Product.objects.count()
     # total_invoice = Invoice.objects.count()
     # total_income = getTotalIncome()
+    print("---------------Id for invoice--------------",pk)
 
     invoice = Invoice.objects.get(id=pk)
+    print("---------------Id for invoice--------------",invoice)
+
     invoice_detail = InvoiceDetail.objects.filter(invoice=invoice)
     # if request.method == "POST":
         # invoice_detail.delete()
@@ -108,10 +117,9 @@ def download_invoice_detail(request , pk):
         "product_amount": [],
         "invoice_total": [],
     }
-    id= pk -1
     # for curr in allInvoiceDetails:
         # invoice = Invoice.objects.get(id=pk)
-    product = Product.objects.get(id= invoice_detail.values()[id]['product_id'])
+    product = Product.objects.get(id= invoice_detail.all().values()[0]['product_id'])
     invoiceAndProduct["invoice_id"].append(invoice.id)
     invoiceAndProduct["invoice_date"].append(invoice.date)
     invoiceAndProduct["invoice_customer"].append(invoice.customer)
@@ -127,26 +135,12 @@ def download_invoice_detail(request , pk):
 
 
     df = pd.DataFrame(invoiceAndProduct)
-    df.to_excel(f"static/excel/{invoiceAndProduct['invoice_customer']}.xlsx", index=False)
-
-    # from io import BytesIO
- 
-    # buffer = BytesIO()
-    # p = canvas.Canvas(buffer)
-    # p.drawString(100, 700 , invoiceAndProduct)
-    # p.
-    # p.showPage()
-    # p.save()
-    
-    # buffer.seek(0)
-    
-    # response = FileResponse(buffer, 
-    #                         as_attachment=True, 
-    #                         filename='book_catalog.pdf')
+    print(df)
+    df.to_excel(f"static/excel/{str(invoice.customer)}.xlsx", index=False)
 
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = f'attachment; filename="{invoiceAndProduct["invoice_customer"]}.xlsx"'
-    with open("static/excel/allInvoices.xlsx", "rb") as f:
+    response['Content-Disposition'] = f'attachment; filename="{str(invoice.customer)}.xlsx"'
+    with open(f"static/excel/{str(invoice.customer)}.xlsx", "rb") as f:
         response.write(f.read())
     return response
 
@@ -186,7 +180,11 @@ def upload_product_from_excel(request):
 
 def create_product(request):
     total_product = Product.objects.count()
-    # total_customer = Customer.objects.count()
+
+    # this is commented
+    total_customer = Customer.objects.count()
+    # this is commented
+
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
 
@@ -200,7 +198,11 @@ def create_product(request):
 
     context = {
         "total_product": total_product,
-        # "total_customer": total_customer,
+
+        # this is commented
+        "total_customer": total_customer,
+        # this is commented
+
         "total_invoice": total_invoice,
         "total_income": total_income,
         "product": product,
@@ -211,7 +213,11 @@ def create_product(request):
 
 def view_product(request):
     total_product = Product.objects.count()
-    # total_customer = Customer.objects.count()
+    
+    # this is commented
+    total_customer = Customer.objects.count()
+    # this is commented
+
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
 
@@ -219,7 +225,11 @@ def view_product(request):
     print(product)
     context = {
         "total_product": total_product,
-        # "total_customer": total_customer,
+    
+        # this is commented
+        "total_customer": total_customer,
+        # this is commented
+    
         "total_invoice": total_invoice,
         "total_income": total_income,
         "product": product,
@@ -228,51 +238,60 @@ def view_product(request):
     return render(request, "invoice/view_product.html", context)
 
 
+
+
+        # this is commented
 # Customer view
-# def create_customer(request):
-#     total_product = Product.objects.count()
-#     total_customer = Customer.objects.count()
-#     total_invoice = Invoice.objects.count()
+def create_customer(request):
+    total_product = Product.objects.count()
+    total_customer = Customer.objects.count()
+    total_invoice = Invoice.objects.count()
 
-#     customer = CustomerForm()
+    customer = CustomerForm()
 
-#     if request.method == "POST":
-#         customer = CustomerForm(request.POST)
-#         if customer.is_valid():
-#             customer.save()
-#             return redirect("create_customer")
+    if request.method == "POST":
+        customer = CustomerForm(request.POST)
+        if customer.is_valid():
+            customer.save()
+            return redirect("create_customer")
 
-#     context = {
-#         "total_product": total_product,
-#         "total_customer": total_customer,
-#         "total_invoice": total_invoice,
-#         "customer": customer,
-#     }
+    context = {
+        "total_product": total_product,
+        "total_customer": total_customer,
+        "total_invoice": total_invoice,
+        "customer": customer,
+    }
 
-#     return render(request, "invoice/create_customer.html", context)
+    return render(request, "invoice/create_customer.html", context)
 
+        # this is commented
 
-# def view_customer(request):
-#     total_product = Product.objects.count()
-#     total_customer = Customer.objects.count()
-#     total_invoice = Invoice.objects.count()
+def view_customer(request):
+    total_product = Product.objects.count()
+    total_customer = Customer.objects.count()
+    total_invoice = Invoice.objects.count()
 
-#     customer = Customer.objects.all()
+    customer = Customer.objects.all()
 
-#     context = {
-#         "total_product": total_product,
-#         "total_customer": total_customer,
-#         "total_invoice": total_invoice,
-#         "customer": customer,
-#     }
+    context = {
+        "total_product": total_product,
+        "total_customer": total_customer,
+        "total_invoice": total_invoice,
+        "customer": customer,
+    }
 
-#     return render(request, "invoice/view_customer.html", context)
+    return render(request, "invoice/view_customer.html", context)
+        # this is commented
 
 
 # Invoice view
 def create_invoice(request):
     total_product = Product.objects.count()
-    # total_customer = Customer.objects.count()
+
+    # this is commented
+    total_customer = Customer.objects.count()
+    # this is commented
+
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
 
@@ -285,7 +304,6 @@ def create_invoice(request):
             invoice = Invoice.objects.create(
                 customer=form.cleaned_data.get("customer"),
                 contact=form.cleaned_data.get("contact"),
-                # email=form.cleaned_data.get("email"),
                 date=form.cleaned_data.get("date"),
             )
         if formset.is_valid():
@@ -301,13 +319,21 @@ def create_invoice(request):
                     InvoiceDetail(
                         invoice=invoice, product=product, amount=amount
                     ).save()
+        # this is commented
+
+            print("costumer detail")
+            print(invoice.customer)
+            print(type(invoice.customer))
+
             # Pointing the customer
-            # points = 0
-            # if total > 1000:
-            #     points += total / 1000
+            points = 0
+            if total > 1000:
+                points += total / 1000
+            
             # invoice.customer.customer_points = round(points)
             # # Save the points to Customer table
             # invoice.customer.save()
+        # this is commented
 
             # Save the invoice
             invoice.total = total
@@ -316,7 +342,11 @@ def create_invoice(request):
 
     context = {
         "total_product": total_product,
-        # "total_customer": total_customer,
+
+        # this is commented
+        "total_customer": total_customer,
+        # this is commented
+
         "total_invoice": total_invoice,
         "total_income": total_income,
         "form": form,
@@ -328,7 +358,11 @@ def create_invoice(request):
 
 def view_invoice(request):
     total_product = Product.objects.count()
-    # total_customer = Customer.objects.count()
+
+    # this is commented
+    total_customer = Customer.objects.count()
+    # this is commented
+
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
 
@@ -336,7 +370,9 @@ def view_invoice(request):
 
     context = {
         "total_product": total_product,
-        # "total_customer": total_customer,
+        # this is commented
+        "total_customer": total_customer,
+        # this is commented
         "total_invoice": total_invoice,
         "total_income": total_income,
         "invoice": invoice,
@@ -348,7 +384,11 @@ def view_invoice(request):
 # Detail view of invoices
 def view_invoice_detail(request, pk):
     total_product = Product.objects.count()
-    # total_customer = Customer.objects.count()
+
+        # this is commented
+    total_customer = Customer.objects.count()
+        # this is commented
+
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
 
@@ -357,12 +397,16 @@ def view_invoice_detail(request, pk):
 
     context = {
         "total_product": total_product,
-        # "total_customer": total_customer,
+        # this is commented
+        "total_customer": total_customer,
+        # this is commented
         "total_invoice": total_invoice,
         "total_income": total_income,
         # 'invoice': invoice,
         "invoice_detail": invoice_detail,
     }
+
+    print(context)
 
     return render(request, "invoice/view_invoice_detail.html", context)
 
@@ -370,7 +414,9 @@ def view_invoice_detail(request, pk):
 # Delete invoice
 def delete_invoice(request, pk):
     total_product = Product.objects.count()
-    # total_customer = Customer.objects.count()
+        # this is commented
+    total_customer = Customer.objects.count()
+        # this is commented
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
 
@@ -383,7 +429,9 @@ def delete_invoice(request, pk):
 
     context = {
         "total_product": total_product,
-        # "total_customer": total_customer,
+        # this is commented
+        "total_customer": total_customer,
+        # this is commented
         "total_invoice": total_invoice,
         "total_income": total_income,
         "invoice": invoice,
@@ -393,57 +441,65 @@ def delete_invoice(request, pk):
     return render(request, "invoice/delete_invoice.html", context)
 
 
-# # Edit customer
-# def edit_customer(request, pk):
-#     total_product = Product.objects.count()
-#     # total_customer = Customer.objects.count()
-#     total_invoice = Invoice.objects.count()
+# Edit customer
+def edit_customer(request, pk):
+    total_product = Product.objects.count()
+    
+    # this is commented
+    total_customer = Customer.objects.count()
+    # this is commented
+    
+    total_invoice = Invoice.objects.count()
 
-#     customer = Customer.objects.get(id=pk)
-#     form = CustomerForm(instance=customer)
+    customer = Customer.objects.get(id=pk)
+    form = CustomerForm(instance=customer)
 
-#     if request.method == "POST":
-#         customer = CustomerForm(request.POST, instance=customer)
-#         if customer.is_valid():
-#             customer.save()
-#             return redirect("view_customer")
+    if request.method == "POST":
+        customer = CustomerForm(request.POST, instance=customer)
+        if customer.is_valid():
+            customer.save()
+            return redirect("view_customer")
 
-#     context = {
-#         "total_product": total_product,
-#         "total_customer": total_customer,
-#         "total_invoice": total_invoice,
-#         "customer": form,
-#     }
+    context = {
+        "total_product": total_product,
+        "total_customer": total_customer,
+        "total_invoice": total_invoice,
+        "customer": form,
+    }
 
-#     return render(request, "invoice/create_customer.html", context)
+    return render(request, "invoice/create_customer.html", context)
 
-
+        # this is commented
+        
 # Delete customer
-# def delete_customer(request, pk):
-#     total_product = Product.objects.count()
-#     total_customer = Customer.objects.count()
-#     total_invoice = Invoice.objects.count()
+def delete_customer(request, pk):
+    total_product = Product.objects.count()
+    total_customer = Customer.objects.count()
+    total_invoice = Invoice.objects.count()
 
-#     customer = Customer.objects.get(id=pk)
+    customer = Customer.objects.get(id=pk)
 
-#     if request.method == "POST":
-#         customer.delete()
-#         return redirect("view_customer")
+    if request.method == "POST":
+        customer.delete()
+        return redirect("view_customer")
 
-#     context = {
-#         "total_product": total_product,
-#         "total_customer": total_customer,
-#         "total_invoice": total_invoice,
-#         "customer": customer,
-#     }
+    context = {
+        "total_product": total_product,
+        "total_customer": total_customer,
+        "total_invoice": total_invoice,
+        "customer": customer,
+    }
 
-#     return render(request, "invoice/delete_customer.html", context)
+    return render(request, "invoice/delete_customer.html", context)
+        # this is commented
 
 
 # Edit product
 def edit_product(request, pk):
     total_product = Product.objects.count()
-    # total_customer = Customer.objects.count()
+        # this is commented
+    total_customer = Customer.objects.count()
+        # this is commented
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
 
@@ -451,14 +507,18 @@ def edit_product(request, pk):
     form = ProductForm(instance=product)
 
     if request.method == "POST":
-        # customer = CustomerForm(request.POST, instance=product)
+        # this is commented
+        customer = CustomerForm(request.POST, instance=product)
+        # this is commented
 
         product.save()
         return redirect("view_product")
 
     context = {
         "total_product": total_product,
-        # "total_customer": total_customer,
+        # this is commented
+        "total_customer": total_customer,
+        # this is commented
         "total_invoice": total_invoice,
         "total_income": total_income,
         "product": form,
@@ -470,7 +530,9 @@ def edit_product(request, pk):
 # Delete product
 def delete_product(request, pk):
     total_product = Product.objects.count()
-    # total_customer = Customer.objects.count()
+        # this is commented
+    total_customer = Customer.objects.count()
+        # this is commented
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
 
@@ -483,7 +545,9 @@ def delete_product(request, pk):
 
     context = {
         "total_product": total_product,
-        # "total_customer": total_customer,
+        # this is commented
+        "total_customer": total_customer,
+        # this is commented
         "total_invoice": total_invoice,
         "total_income": total_income,
         "product": product,

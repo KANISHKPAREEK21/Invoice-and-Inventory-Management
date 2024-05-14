@@ -19,7 +19,7 @@
                                 <th>Price</th>
                                 <th>Amount</th>
                                 <th>Total</th>
-                                <th>Download</th>
+                                <!-- <th>Download</th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -37,12 +37,13 @@
                                 <td style="padding: 0.45em;">
                                     {{i.get_total_bill}}
                                 </td>
-                                <td style="padding: 0.45em;">
+                                <!-- <td style="padding: 0.45em;">
                                     <a href="{% url 'download_invoice_detail' i.id %}" class="btn btn-outline-primary"
                                     style="width: 100%; height: 100%; border-radius: 0">
+                                    {{i.id}}
                                      <i class="fas fa-long-arrow-alt-down"></i>
                                     </a>
-                                </td>
+                                </td> -->
                             </tr>
                             {% endfor %}
                         </tbody>

@@ -7,9 +7,11 @@ class ProductAdmin(admin.ModelAdmin):
                     'product_unit', 'product_is_delete']
 
 
-# class CustomerAdmin(admin.ModelAdmin):
-#     list_display = ['id', 'customer_name',
-#                     'customer_gender', 'customer_dob', 'customer_points']
+# this is comment
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ['id', 'customer_name',
+                    'customer_amount', 'customer_contact']
+# this is comment
 
 
 class InvoiceDetailAdmin(admin.ModelAdmin):
@@ -22,6 +24,10 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(Product, ProductAdmin)
-# admin.site.register(Customer, CustomerAdmin)
+
+# this is comment
+admin.site.register(Customer, CustomerAdmin)
+# this is comment
+
 admin.site.register(InvoiceDetail, InvoiceDetailAdmin)
 admin.site.register(Invoice, InvoiceAdmin)

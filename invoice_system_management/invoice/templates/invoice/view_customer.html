@@ -26,7 +26,7 @@
                         <tbody>
                             {% for i in customer %}
                             <tr>
-                                <td style="padding: 0.45em;">{{i.id}}</td>
+                                <td style="padding: 0.45em;">{{ forloop.counter }}</td>
                                 <td style="padding: 0.45em;">{{i.customer_name}}</td>
                                 <td style="padding: 0.45em;">{{i.customer_contact}}</td>
                                 <td style="padding: 0.45em;">{{i.customer_amount}}</td>

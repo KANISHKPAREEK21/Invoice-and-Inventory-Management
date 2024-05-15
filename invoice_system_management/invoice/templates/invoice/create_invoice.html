@@ -22,9 +22,20 @@
                         <label class="form-label" for="invoice_contact">Contact</label>
                         {{form.contact}}
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="invoice_comments">Comments</label>
-                        {{form.comments}}
+                    <div class="mb-3" style="display: flex; width: 100%;">
+                        <div style="width: 65%;"><label class="form-label" for="invoice_comments">Comments</label>
+                            {{form.comments}}</div>
+                        <div style="width: 30%; text-align: center;"><label class="form-label"
+                                for="invoice_gst">GST</label> <br>
+                            <div class="choices" style="display: flex; justify-content: space-evenly;">
+                                <div>
+                                    <input type="radio" name="choice" id="yes"><label for="yes">&nbsp;&nbsp;Yes</label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="choice" id="no"><label for="no">&nbsp;&nbsp;No</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- <div class="mb-3">
@@ -40,6 +51,11 @@
                                 <td style="border: 0; padding: 0 0.5em 0 0; width: 80%">
                                     <label class="form-label" for="invoice_detail_product">Product name</label>
                                     {{form.product}}
+                                </td>
+                                <td style="border: 0; padding: 0 0.5em 0 0; width: 20%">
+                                    <label class="form-label" for="invoice_detail_price">Product Price</label>
+                                    <label for="rupee">(&#8377;)</label>
+                                    {{form.price}}
                                 </td>
                                 <td style="border: 0; padding: 0 0 0 0.5em;">
                                     <label class="form-label" for="invoice_detail_amount">Amounts</label>

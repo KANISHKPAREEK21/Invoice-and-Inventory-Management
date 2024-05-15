@@ -29,6 +29,13 @@ class Invoice(models.Model):
         max_length=255, default='', blank=True, null=True)
     comments = models.TextField(default='', blank=True, null=True)
     total = models.FloatField(default=0)
+    # YES = 'Yes'
+    # NO = 'No'
+    # CHOICES = (
+    #     (NO, 'NO'),
+    #     (YES, 'YES'),
+    # )
+    # gst = models.CharField(max_length=3, choices=CHOICES)
 
     def __str__(self):
         return str(self.id)
@@ -39,9 +46,10 @@ class InvoiceDetail(models.Model):
         Invoice, on_delete=models.SET_NULL, blank=True, null=True)
     product = models.ForeignKey(
         Product, on_delete=models.SET_NULL, blank=True, null=True)
+    price = models.IntegerField(default=0)
     amount = models.IntegerField(default=1)
 
     @property
     def get_total_bill(self):
-        total = float(self.product.product_price) * float(self.amount)
+        total = float(self.price) * float(self.amount)
         return total

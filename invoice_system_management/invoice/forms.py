@@ -52,11 +52,18 @@ class CustomerForm(forms.ModelForm):
 
 class InvoiceForm(forms.ModelForm):
     class Meta:
+        # YES = 'Yes'
+        # NO = 'No'
+        # COMMENTS_CHOICES = [
+        #     (YES, 'Yes'),
+        #     (NO, 'No'),
+        # ]
         model = Invoice
         fields = [
             'customer',
             'comments',
             'contact',
+            # 'gst'
             # 'email',
         ]
         widgets = {
@@ -80,6 +87,11 @@ class InvoiceForm(forms.ModelForm):
                 'id': 'invoice_comments',
                 'placeholder': 'Enter comments',
             }),
+            # 'gst': forms.ChoiceField(
+            #     choices=COMMENTS_CHOICES,
+            #     widget=forms.RadioSelect(),
+            #     initial=NO,
+            # ),
 
         }
 
@@ -90,6 +102,7 @@ class InvoiceDetailForm(forms.ModelForm):
         fields = [
             'product',
             'amount',
+            'price'
         ]
         widgets = {
             'product': forms.Select(attrs={
@@ -101,7 +114,12 @@ class InvoiceDetailForm(forms.ModelForm):
                 'id': 'invoice_detail_amount',
                 'placeholder': '0',
                 'type': 'number',
-            })
+            }),
+            'price': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'invoice_detail_price',
+                'placeholder': 'Enter price',
+            }),
         }
 
 

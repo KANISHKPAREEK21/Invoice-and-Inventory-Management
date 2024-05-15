@@ -305,15 +305,17 @@ def create_invoice(request):
                 customer=form.cleaned_data.get("customer"),
                 contact=form.cleaned_data.get("contact"),
                 date=form.cleaned_data.get("date"),
+                gst=form.cleaned_data.get("gst"),
             )
         if formset.is_valid():
             total = 0
             for form in formset:
                 product = form.cleaned_data.get("product")
                 amount = form.cleaned_data.get("amount")
+                price = form.cleaned_data.get("price")
                 if product and amount:
                     # Sum each row
-                    sum = float(product.product_price) * float(amount)
+                    sum = float(price) * float(amount)
                     # Sum of total invoice
                     total += sum
                     InvoiceDetail(
@@ -336,6 +338,8 @@ def create_invoice(request):
         # this is commented
 
             # Save the invoice
+            # if(gst == 'YES'):
+            #     total += (total / 100) * 18
             invoice.total = total
             invoice.save()
             return redirect("view_invoice")

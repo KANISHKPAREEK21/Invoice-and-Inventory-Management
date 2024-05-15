@@ -26,7 +26,7 @@
                         <tbody>
                             {% for i in product %}
                             <tr>
-                                <td style="padding: 0.45em;">{{i.id}}</td>
+                                <td style="padding: 0.45em;">{{ forloop.counter }}</td>
                                 <td style="padding: 0.45em;">{{i.product_name}}</td>
                                 <td style="padding: 0.45em;">{{i.product_price}}</td>
                                 <td style="padding: 0.45em;">{{i.product_unit}}</td>

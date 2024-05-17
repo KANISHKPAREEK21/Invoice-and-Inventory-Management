@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import formset_factory
 
+import datetime
 from .models import *
 
 
@@ -10,7 +11,7 @@ class ProductForm(forms.ModelForm):
         fields = [
             'product_name',
             'product_price',
-            'product_unit',
+            # 'product_unit',
         ]
         widgets = {
             'product_name': forms.TextInput(attrs={
@@ -24,11 +25,11 @@ class ProductForm(forms.ModelForm):
                 'placeholder': 'Enter price of the product',
                 'type': 'number',
             }),
-            'product_unit': forms.TextInput(attrs={
-                'class': 'form-control',
-                'id': 'product_unit',
-                'placeholder': 'Enter unit of the product',
-            }),
+            # 'product_unit': forms.TextInput(attrs={
+            #     'class': 'form-control',
+            #     'id': 'product_unit',
+            #     'placeholder': 'Enter unit of the product',
+            # }),
         }
 
 
@@ -52,25 +53,20 @@ class CustomerForm(forms.ModelForm):
 
 class InvoiceForm(forms.ModelForm):
     class Meta:
-        # YES = 'Yes'
-        # NO = 'No'
-        # COMMENTS_CHOICES = [
-        #     (YES, 'Yes'),
-        #     (NO, 'No'),
-        # ]
+
         model = Invoice
         fields = [
             'customer',
             'comments',
             'contact',
-            # 'gst'
+            'gst'
             # 'email',
         ]
         widgets = {
             'customer': forms.TextInput(attrs={
                 'class': 'form-control',
                 'id': 'invoice_customer',
-                'placeholder': 'Enter name of the customer',
+                'placeholder': 'Enter name of the customer ----------------------------',
             }),
             'contact': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -87,12 +83,11 @@ class InvoiceForm(forms.ModelForm):
                 'id': 'invoice_comments',
                 'placeholder': 'Enter comments',
             }),
-            # 'gst': forms.ChoiceField(
-            #     choices=COMMENTS_CHOICES,
-            #     widget=forms.RadioSelect(),
-            #     initial=NO,
-            # ),
-
+            'gst': forms.CheckboxInput(attrs={
+                'class' : 'form-check',
+                'id': 'invoice_gst',
+                'style':'width: 100%;'
+            }),
         }
 
 
@@ -102,7 +97,7 @@ class InvoiceDetailForm(forms.ModelForm):
         fields = [
             'product',
             'amount',
-            'price'
+            # 'price'
         ]
         widgets = {
             'product': forms.Select(attrs={
@@ -115,16 +110,43 @@ class InvoiceDetailForm(forms.ModelForm):
                 'placeholder': '0',
                 'type': 'number',
             }),
-            'price': forms.TextInput(attrs={
-                'class': 'form-control',
-                'id': 'invoice_detail_price',
-                'placeholder': 'Enter price',
-            }),
+            # 'price': forms.TextInput(attrs={
+            #     'class': 'form-control',
+            #     'id': 'invoice_detail_price',
+            #     'placeholder': f'{Product.product_price}',
+            # }),
         }
 
+class ExpenseForm(forms.ModelForm):
+    class Meta:
+        model = Expense
+        fields = [
+            'expense_name',
+            'expense_cost'
+        ]
+        widgets = {
+            'expense_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'expense_name',
+                'placeholder': 'Enter Expense',
+                
+            }),
+            'expense_cost': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'id': 'expense_cost',
+                'placeholder': 'Enter price of the product',
+                'type': 'number',
+            }),
+        }
+        expense = models.CharField(max_length=255)
+        cost = models.FloatField(max_length=255)
+        is_active = models.BooleanField(default=True)
 
-class excelUploadForm(forms.Form):
-    file = forms.FileField()
+
+# class excelUploadForm(forms.Form):
+#     file = forms.FileField()
 
 
 InvoiceDetailFormSet = formset_factory(InvoiceDetailForm, extra=1)
+
+ProductFormSet = formset_factory(ProductForm, extra=1)

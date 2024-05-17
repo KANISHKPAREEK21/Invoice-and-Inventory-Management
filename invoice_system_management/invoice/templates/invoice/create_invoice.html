@@ -13,7 +13,7 @@
             <div class="card-body">
                 <form method="post" action="">
                     {% csrf_token %}
-                    
+
                     <div class="mb-3">
                         <label class="form-label" for="invoice_customer">Customer name</label>
                         {{form.customer}}
@@ -24,38 +24,35 @@
                     </div>
                     <div class="mb-3" style="display: flex; width: 100%;">
                         <div style="width: 65%;"><label class="form-label" for="invoice_comments">Comments</label>
-                            {{form.comments}}</div>
-                        <div style="width: 30%; text-align: center;"><label class="form-label"
-                                for="invoice_gst">GST</label> <br>
-                            <div class="choices" style="display: flex; justify-content: space-evenly;">
-                                <div>
-                                    <input type="radio" name="choice" id="yes"><label for="yes">&nbsp;&nbsp;Yes</label>
-                                </div>
-                                <div>
-                                    <input type="radio" name="choice" id="no"><label for="no">&nbsp;&nbsp;No</label>
-                                </div>
-                            </div>
+                            {{form.comments}}
+                        </div>
+
+                        <div style="width: 30%; text-align: center; "><label class="form-label"
+                                for="invoice_gst">GST</label>
+                            {{form.gst}}
                         </div>
                     </div>
-                    
-                    <!-- <div class="mb-3">
-                        <label class="form-label" for="invoice_email">Email</label>
-                        {{form.email}}
-                    </div> -->
-                    
+
+
                     {{ formset.management_form }}
                     {% for form in formset %}
                     <div class="table">
-                        <table class="table">
-                            <tr>
+                        <table class="table" id="table">
+                            <tr id="tableRow">
                                 <td style="border: 0; padding: 0 0.5em 0 0; width: 80%">
                                     <label class="form-label" for="invoice_detail_product">Product name</label>
                                     {{form.product}}
                                 </td>
-                                <td style="border: 0; padding: 0 0.5em 0 0; width: 20%">
+                                <!-- <td style="border: 0; padding: 0 0.5em 0 0; width: 20%">
                                     <label class="form-label" for="invoice_detail_price">Product Price</label>
                                     <label for="rupee">(&#8377;)</label>
-                                    {{form.price}}
+                                    {{product_form.product_price}}
+                                </td> -->
+                                <td style="border: 0; padding: 0 0.5em 0 0; width: 20%">
+                                    <label class="form-label" for="invoice_detail_price">Product Price</label>
+                                    <label class="form-label" for="invoice_detail_rupee">(&#8377;)</label>
+                                    <input type="number" id="id_form-{{forloop.counter0}}-price" class="form-control"
+                                        name="form-{{forloop.counter}}-price">
                                 </td>
                                 <td style="border: 0; padding: 0 0 0 0.5em;">
                                     <label class="form-label" for="invoice_detail_amount">Amounts</label>
@@ -101,5 +98,57 @@
     $('#add_more').click(function () {
         cloneMore('div.table:last', 'form');
     });
+
+    // Function to get the CSRF token from the cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    // Set up AJAX to include the CSRF token
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+    $(document).ready(function(){
+        $('#invoice_detail_product').change(function () {
+            var selectedValue = $(this).val();
+            var selectedText = $(this).find('option:selected').text();
+            console.log('Selected value:', selectedValue);
+            console.log('Selected text:', selectedText);
+            var table = $(this).closest('#table tr');
+            console.log(table[0].cells[0]);
+            var tr = $(this).closest('tr');
+            var rowindex = tr.index();  
+            $.ajax({
+                url: '/product_price/' + selectedValue + '/',
+                type: 'POST',
+                data: selectedValue,
+                success: function (response) {
+                    $('#id_price').val(response.price);
+                    // var priceInputId = "id_form-" + 0 + "-price";
+                    // $("#" + priceInputId).val(response.price);
+                    document.getElementById("id_form-"+rowindex+"-price").defaultValue = response.price;
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            })
+        });
+    })
 </script>
 {% endblock %}

@@ -1,6 +1,18 @@
 {% extends "invoice/base/base.html" %}
 <!-- Content Row -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
+
 {% block content %}
+<div class="row" class="pull-right"
+    style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i> 
+    <input type="text" name="daterange" style="border: none; width: 80%;" />
+</div>
 <div class="row">
     <!-- Area Chart -->
     <div class="col-xl-12 col-lg-7">
@@ -65,4 +77,32 @@
         </div>
     </div>
 </div>
+
+<script>
+    $('input[name="daterange"]').daterangepicker();
+    // $('#daterange').daterangepicker();
+    var startDate = '';
+    var endDate = '';
+    $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
+        // console.log(picker.startDate.format('YYYY-MM-DD'));
+        startDate = picker.startDate.format('YYYY-MM-DD')
+        // console.log(picker.endDate.format('YYYY-MM-DD'));
+        endDate = picker.endDate.format('YYYY-MM-DD')
+    });
+    $.ajax({
+        url: '',
+        type: 'POST',
+        data: {
+            "startDate": startDate,
+            "endDate": endDate,
+        },
+        success: function(response){
+
+        },
+        error: function(err){
+            console.log("Error: ",err);
+        }
+    })
+</script>
+
 {% endblock %}

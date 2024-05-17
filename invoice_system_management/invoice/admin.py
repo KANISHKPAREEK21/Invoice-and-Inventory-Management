@@ -3,8 +3,8 @@ from .models import *
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['id', 'product_name', 'product_price',
-                    'product_unit', 'product_is_delete']
+    list_display = ['id', 'product_name', 'product_price', 'product_is_delete']
+                    # 'product_unit'
 
 
 # this is comment

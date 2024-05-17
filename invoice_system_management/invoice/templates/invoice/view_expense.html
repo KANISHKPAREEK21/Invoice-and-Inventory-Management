@@ -1,0 +1,104 @@
+{% extends "invoice/base/base.html" %}
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{% block content %}
+
+<div class="row" class="pull-right"
+    style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i> 
+    <input type="text" name="daterange" style="border: none; width: 80%;" />
+</div>
+
+<div class="row">
+    <!-- Area Chart -->
+    <div class="col-xl-12 col-lg-7">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <label class="m-0 font-weight-bold text-primary">Expenses</label>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <!-- <th>Unit</th> -->
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in expense %}
+                            <tr>
+                                <td style="padding: 0.45em;">{{ forloop.counter }}</td>
+                                <td style="padding: 0.45em;">{{i.expense_name}}</td>
+                                <td style="padding: 0.45em;">{{i.expense_cost}}</td>
+                                <!-- <td style="padding: 0.45em;">{{i.product_unit}}</td> -->
+
+                                <td style="padding: 0;">
+                                    <a href="{% url 'delete_expense' i.id %}" class="btn btn-outline-danger"
+                                       style="width: 100%; height: 100%; border-radius: 0">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+
+                        <tfoot>
+                            <tr>
+                                <td id="total_expense"></td>
+                                <td>Total</td>
+                                <td id ="total_expense_cost">{{total}}</td>
+                              </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+var table_id = $('#dataTable tr').length - 2;
+console.log(table_id)
+$('#total_expense').html(table_id)
+</script>
+
+<script>
+    $('input[name="daterange"]').daterangepicker();
+    // $('#daterange').daterangepicker();
+    var startDate = '';
+    var endDate = '';
+    $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
+        // console.log(picker.startDate.format('YYYY-MM-DD'));
+        startDate = picker.startDate.format('YYYY-MM-DD')
+        // console.log(picker.endDate.format('YYYY-MM-DD'));
+        endDate = picker.endDate.format('YYYY-MM-DD')
+    });
+    $.ajax({
+        url: '',
+        type: 'POST',
+        data: {
+            "startDate": startDate,
+            "endDate": endDate,
+        },
+        success: function(response){
+
+        },
+        error: function(err){
+            console.log("Error: ",err);
+        }
+    })
+</script>
+{% endblock %}
+
+

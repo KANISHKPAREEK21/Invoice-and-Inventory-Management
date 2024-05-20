@@ -1,5 +1,6 @@
 from django.db import models
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 # Create your models here.
 class Product(models.Model):
     product_name = models.CharField(max_length=255)
@@ -24,11 +25,14 @@ class Customer(models.Model):
 class Invoice(models.Model):
     date = models.DateField(auto_now_add=True)
     customer = models.TextField(default='')
+    # customer = models.ForeignKey(
+    #     Customer, on_delete=models.SET_NULL, blank=True, null=True)
     contact = models.CharField(
         max_length=255, default='', blank=True, null=True)
     comments = models.TextField(default='', blank=True, null=True)
     total = models.FloatField(default=0)
     gst = models.BooleanField(max_length=3, default=False)
+    # price = models.IntegerField(default=Product.product_price) #Product.product_price
 
     def __str__(self):
         return str(self.id)
@@ -39,15 +43,19 @@ class InvoiceDetail(models.Model):
         Invoice, on_delete=models.SET_NULL, blank=True, null=True)
     product = models.ForeignKey(
         Product, on_delete=models.SET_NULL, blank=True, null=True)
-    # price = models.IntegerField(default=0) #Product.product_price
+    price = models.FloatField(null=True)
+        # Product, on_delete=models.SET_NULL, blank=True, null=True) #Product.product_price
     amount = models.IntegerField(default=1)
 
     @property
     def get_total_bill(self):
-        total = float(self.product.product_price) * float(self.amount)
-
+        if(self.invoice.gst == True):
+            total = float(self.price) * float(self.amount)
+            total += (0.18) * total
+        else:
+            total = float(self.price) * float(self.amount)
         return total
-    
+
 class Expense(models.Model):
     expense_name = models.CharField(max_length=255)
     expense_cost = models.FloatField(max_length=255)

@@ -59,14 +59,15 @@ class InvoiceForm(forms.ModelForm):
             'customer',
             'comments',
             'contact',
-            'gst'
+            'gst',
+            # 'price'
             # 'email',
         ]
         widgets = {
             'customer': forms.TextInput(attrs={
                 'class': 'form-control',
                 'id': 'invoice_customer',
-                'placeholder': 'Enter name of the customer ----------------------------',
+                'placeholder': 'Enter name of the customer',
             }),
             'contact': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -88,6 +89,11 @@ class InvoiceForm(forms.ModelForm):
                 'id': 'invoice_gst',
                 'style':'width: 100%;'
             }),
+            # 'price': forms.TextInput(attrs={
+            #     'class': 'form-control',
+            #     'id': 'invoice_detail_price',
+            #     'placeholder': f'{Product.product_price}',
+            # }),
         }
 
 
@@ -97,11 +103,11 @@ class InvoiceDetailForm(forms.ModelForm):
         fields = [
             'product',
             'amount',
-            # 'price'
+            'price'
         ]
         widgets = {
             'product': forms.Select(attrs={
-                'class': 'form-control',
+                'class': 'form-control product-dropdown',
                 'id': 'invoice_detail_product',
             }),
             'amount': forms.TextInput(attrs={
@@ -110,11 +116,11 @@ class InvoiceDetailForm(forms.ModelForm):
                 'placeholder': '0',
                 'type': 'number',
             }),
-            # 'price': forms.TextInput(attrs={
-            #     'class': 'form-control',
-            #     'id': 'invoice_detail_price',
-            #     'placeholder': f'{Product.product_price}',
-            # }),
+            'price': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'id_form-0-price',
+                # 'placeholder': f'{Product.product_price}',
+            }),
         }
 
 class ExpenseForm(forms.ModelForm):

@@ -32,12 +32,19 @@
                             {{form.gst}}
                         </div>
                     </div>
+                    <!-- <div style="border: 0; padding: 0 0.5em 0 0; width: 20%">
+                        <label class="form-label" for="invoice_detail_price">Product Price</label>
+                        <label class="form-label" for="invoice_detail_rupee">(&#8377;)</label>
+                        <input type="number" id="id_form-{{forloop.counter0}}-price" class="form-control"
+                            name="form-{{forloop.counter}}-price">
+                            {{form.price}}
+                        </div> -->
 
 
                     {{ formset.management_form }}
-                    {% for form in formset %}
                     <div class="table">
                         <table class="table" id="table">
+                            {% for form in formset %}
                             <tr id="tableRow">
                                 <td style="border: 0; padding: 0 0.5em 0 0; width: 80%">
                                     <label class="form-label" for="invoice_detail_product">Product name</label>
@@ -51,17 +58,18 @@
                                 <td style="border: 0; padding: 0 0.5em 0 0; width: 20%">
                                     <label class="form-label" for="invoice_detail_price">Product Price</label>
                                     <label class="form-label" for="invoice_detail_rupee">(&#8377;)</label>
-                                    <input type="number" id="id_form-{{forloop.counter0}}-price" class="form-control"
-                                        name="form-{{forloop.counter}}-price">
+                                    <!-- <input type="number" id="id_form-{{forloop.counter0}}-price" class="form-control"
+                                        name="form-{{forloop.counter}}-price"> -->
+                                        {{form.price}}
                                 </td>
                                 <td style="border: 0; padding: 0 0 0 0.5em;">
                                     <label class="form-label" for="invoice_detail_amount">Amounts</label>
                                     {{form.amount}}
                                 </td>
                             </tr>
+                            {% endfor %}
                         </table>
                     </div>
-                    {% endfor %}
                     <div class="mb-3 d-flex justify-content-center">
                         <input class="btn btn-outline-warning add-form-row" style="margin: 0 1em 0 1em; width: 40%"
                             type="button" value="Add more product" id="add_more">
@@ -93,10 +101,14 @@
         total++;
         $('#id_' + type + '-TOTAL_FORMS').val(total);
         $(selector).after(newElement);
+
+        // Rebind the change event to the newly added dropdown
+        bindProductDropdownChangeEvent(newElement.find('.product-dropdown'));
     }
 
     $('#add_more').click(function () {
-        cloneMore('div.table:last', 'form');
+        // cloneMore('tr.form-row:last', 'form');
+        cloneMore('table:last', 'form');
     });
 
     // Function to get the CSRF token from the cookie
@@ -124,31 +136,58 @@
             }
         }
     });
-    $(document).ready(function(){
-        $('#invoice_detail_product').change(function () {
-            var selectedValue = $(this).val();
-            var selectedText = $(this).find('option:selected').text();
-            console.log('Selected value:', selectedValue);
-            console.log('Selected text:', selectedText);
-            var table = $(this).closest('#table tr');
-            console.log(table[0].cells[0]);
-            var tr = $(this).closest('tr');
-            var rowindex = tr.index();  
+
+    function bindProductDropdownChangeEvent(element) {
+        element.change(function () {
+            var product_id = $(this).val();
+            var priceField = $(this).closest('tr').find('.form-control[id^="id_form-"][id$="-price"]');
+
+            console.log("ID: ",product_id)
+            console.log("\nPrice Field: ", priceField)
+
             $.ajax({
-                url: '/product_price/' + selectedValue + '/',
+                // url: "{% url 'product_price' pk=0 %}".replace('0', product_id),  // Replace '0' with the product_id
+                // data: {
+                url: '/product_price/' + product_id + '/',
+                //     'product_id': product_id
+                // },
                 type: 'POST',
-                data: selectedValue,
-                success: function (response) {
-                    $('#id_price').val(response.price);
-                    // var priceInputId = "id_form-" + 0 + "-price";
-                    // $("#" + priceInputId).val(response.price);
-                    document.getElementById("id_form-"+rowindex+"-price").defaultValue = response.price;
-                },
-                error: function (xhr, status, error) {
-                    console.log(xhr.responseText);
+                success: function (data) {
+                    priceField.val(data.price);
                 }
-            })
+            });
         });
-    })
+    }
+
+    $(document).ready(function () {
+        bindProductDropdownChangeEvent($('.product-dropdown'));
+    });
+
+    // $(document).ready(function(){
+    //     $('#invoice_detail_product').change(function () {
+    //         var selectedValue = $(this).val();
+    //         var selectedText = $(this).find('option:selected').text();
+    //         console.log('Selected value:', selectedValue);
+    //         console.log('Selected text:', selectedText);
+    //         var table = $(this).closest('#table tr');
+    //         console.log(table[0].cells[0]);
+    //         var tr = $(this).closest('table tr');
+    //         var rowindex = tr.index();  
+    //         $.ajax({
+    //             url: '/product_price/' + selectedValue + '/',
+    //             type: 'POST',
+    //             data: selectedValue,
+    //             success: function (response) {
+    //                 $('#id_price').val(response.price);
+    //                 // var priceInputId = "id_form-" + 0 + "-price";
+    //                 // $("#" + priceInputId).val(response.price);
+    //                 document.getElementById("id_form-"+rowindex+"-price").defaultValue = response.price;
+    //             },
+    //             error: function (xhr, status, error) {
+    //                 console.log(xhr.responseText);
+    //             }
+    //         })
+    //     });
+    // })
 </script>
 {% endblock %}

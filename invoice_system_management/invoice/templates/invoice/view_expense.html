@@ -10,9 +10,9 @@
 {% block content %}
 
 <div class="row" class="pull-right"
-    style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i> 
-    <input type="text" name="daterange" style="border: none; width: 80%;" />
+    style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%; margin-left: 0px;">
+    <i class="glyphicon glyphicon-calendar fa fa-calendar" style="width: 3%;"></i>
+    <input type="text" name="daterange" style="border: none; width: 97%; cursor: pointer; height: 100%; color: #999999;" readonly />
 </div>
 
 <div class="row">
@@ -30,16 +30,17 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Date</th>
                                 <th>Name</th>
                                 <th>Amount</th>
-                                <!-- <th>Unit</th> -->
                                 <th>Delete</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tableBody">
                             {% for i in expense %}
                             <tr>
                                 <td style="padding: 0.45em;">{{ forloop.counter }}</td>
+                                <td style="padding: 0.45em;">{{i.date}}</td>
                                 <td style="padding: 0.45em;">{{i.expense_name}}</td>
                                 <td style="padding: 0.45em;">{{i.expense_cost}}</td>
                                 <!-- <td style="padding: 0.45em;">{{i.product_unit}}</td> -->
@@ -57,6 +58,7 @@
                         <tfoot>
                             <tr>
                                 <td id="total_expense"></td>
+                                <td id="dateRange"></td>
                                 <td>Total</td>
                                 <td id ="total_expense_cost">{{total}}</td>
                               </tr>
@@ -71,6 +73,14 @@
 var table_id = $('#dataTable tr').length - 2;
 console.log(table_id)
 $('#total_expense').html(table_id)
+
+// $(document).ready(function(){
+//     $('#total_title').html("Total Expense")
+//     var sum = sum()
+//     $.ajax({
+//         url:''
+//     })
+// })
 </script>
 
 <script>
@@ -83,22 +93,57 @@ $('#total_expense').html(table_id)
         startDate = picker.startDate.format('YYYY-MM-DD')
         // console.log(picker.endDate.format('YYYY-MM-DD'));
         endDate = picker.endDate.format('YYYY-MM-DD')
-    });
-    $.ajax({
-        url: '',
-        type: 'POST',
-        data: {
-            "startDate": startDate,
-            "endDate": endDate,
-        },
-        success: function(response){
 
-        },
-        error: function(err){
-            console.log("Error: ",err);
+        // $('#startDate').html(startDate)
+        // $('#endDate').html(endDate)
+        // $('.dates').attr('style','visibility:visible')
+        $('#dateRange').html(startDate + ' to ' + endDate)
+
+        filterRows(startDate,endDate)
+        // sum()
+    });
+
+
+    function filterRows(startDate, endDate) {
+        selectedStartDate = new Date(startDate)
+        selectedEndDate = new Date(endDate)
+
+        startDate = selectedStartDate.getDate();
+        endDate = selectedEndDate.getDate();
+        var startMonth = selectedStartDate.getMonth()+1;
+        var endMonth = selectedEndDate.getMonth()+1;
+        var startYear = selectedStartDate.getFullYear();
+        var endYear = selectedEndDate.getFullYear();
+        // console.log(startDate,startMonth,startYear,endDate,endMonth,endYear)
+
+        if (startDate == endDate) {
+            endDate = startDate;
         }
-    })
+        var tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
+        for (var i = 0; i < tableRows.length; i++) {
+            var rowDate = tableRows[i].getElementsByTagName('td')[1].innerText;
+
+            var dateObj = new Date(rowDate);
+            var tableDate = dateObj.getDate();
+            var tableMonth = dateObj.getMonth()+1;
+            var tableYear = dateObj.getFullYear();
+            // console.log(tableDate,tableMonth,tableYear)
+
+            if(tableYear >= startYear && tableYear <= endYear){
+                if(tableMonth >= startMonth && tableMonth <= endMonth){
+                    if(tableDate >= startDate && tableDate <= endDate){
+                        tableRows[i].style.display = '';
+                    }else{
+                        tableRows[i].style.display = 'none';
+                    }
+                }
+                else{
+                    tableRows[i].style.display = 'none';
+                }
+            }else{
+                tableRows[i].style.display = 'none';
+            }
+        }
+    }
 </script>
 {% endblock %}
-
-

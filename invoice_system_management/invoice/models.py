@@ -16,6 +16,7 @@ class Customer(models.Model):
     customer_name = models.CharField(max_length=255)
     customer_contact = models.CharField(max_length=255)
     customer_amount = models.IntegerField(default=0)
+    customer_is_delete = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.customer_name)
@@ -24,15 +25,16 @@ class Customer(models.Model):
 
 class Invoice(models.Model):
     date = models.DateField(auto_now_add=True)
-    customer = models.TextField(default='')
-    # customer = models.ForeignKey(
-    #     Customer, on_delete=models.SET_NULL, blank=True, null=True)
+    # customer = models.TextField(default='')
+    customer = models.ForeignKey(
+        Customer, on_delete=models.SET_NULL, blank=True, null=True)
     contact = models.CharField(
         max_length=255, default='', blank=True, null=True)
     comments = models.TextField(default='', blank=True, null=True)
     total = models.FloatField(default=0)
     gst = models.BooleanField(max_length=3, default=False)
     # price = models.IntegerField(default=Product.product_price) #Product.product_price
+    invoice_is_delete = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.id)
@@ -46,6 +48,7 @@ class InvoiceDetail(models.Model):
     price = models.FloatField(null=True)
         # Product, on_delete=models.SET_NULL, blank=True, null=True) #Product.product_price
     amount = models.IntegerField(default=1)
+    invoicedetail_is_delete = models.BooleanField(default=False)
 
     @property
     def get_total_bill(self):

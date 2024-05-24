@@ -64,8 +64,8 @@ class InvoiceForm(forms.ModelForm):
             # 'email',
         ]
         widgets = {
-            'customer': forms.TextInput(attrs={
-                'class': 'form-control',
+            'customer': forms.Select(attrs={
+                'class': 'form-control customer-dropdown',
                 'id': 'invoice_customer',
                 'placeholder': 'Enter name of the customer',
             }),
@@ -73,6 +73,7 @@ class InvoiceForm(forms.ModelForm):
                 'class': 'form-control',
                 'id': 'invoice_contact',
                 'placeholder': 'Enter contact of the customer',
+                'readonly':'readonly',
             }),
             # 'email': forms.EmailInput(attrs={
             #     'class': 'form-control',

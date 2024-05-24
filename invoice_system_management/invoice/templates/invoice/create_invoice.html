@@ -13,9 +13,8 @@
             <div class="card-body">
                 <form method="post" action="">
                     {% csrf_token %}
-
                     <div class="mb-3">
-                        <label class="form-label" for="invoice_customer">Customer name</label>
+                        <label class="form-label" for="invoice_customer" id="customer_name">Customer name</label>
                         {{form.customer}}
                     </div>
                     <div class="mb-3">
@@ -146,11 +145,7 @@
             console.log("\nPrice Field: ", priceField)
 
             $.ajax({
-                // url: "{% url 'product_price' pk=0 %}".replace('0', product_id),  // Replace '0' with the product_id
-                // data: {
                 url: '/product_price/' + product_id + '/',
-                //     'product_id': product_id
-                // },
                 type: 'POST',
                 success: function (data) {
                     priceField.val(data.price);
@@ -159,35 +154,28 @@
         });
     }
 
+    function bindCustomerDropdownChangeEvent(element) {
+        element.change(function () {
+            var customer_id = $(this).val();
+            // var customerField = $(this).find('.form-control[id="invoice_contact"]');
+            var customerField = $("#invoice_contact");
+
+            console.log("ID: ",customer_id)
+            console.log("\nCustomer Field: ", customerField)
+
+            $.ajax({
+                url: '/customer_contact/' + customer_id + '/',
+                type: 'POST',
+                success: function (data) {
+                    customerField.val(data.contact);
+                }
+            });
+        });
+    }
+
     $(document).ready(function () {
         bindProductDropdownChangeEvent($('.product-dropdown'));
+        bindCustomerDropdownChangeEvent($('.customer-dropdown'));
     });
-
-    // $(document).ready(function(){
-    //     $('#invoice_detail_product').change(function () {
-    //         var selectedValue = $(this).val();
-    //         var selectedText = $(this).find('option:selected').text();
-    //         console.log('Selected value:', selectedValue);
-    //         console.log('Selected text:', selectedText);
-    //         var table = $(this).closest('#table tr');
-    //         console.log(table[0].cells[0]);
-    //         var tr = $(this).closest('table tr');
-    //         var rowindex = tr.index();  
-    //         $.ajax({
-    //             url: '/product_price/' + selectedValue + '/',
-    //             type: 'POST',
-    //             data: selectedValue,
-    //             success: function (response) {
-    //                 $('#id_price').val(response.price);
-    //                 // var priceInputId = "id_form-" + 0 + "-price";
-    //                 // $("#" + priceInputId).val(response.price);
-    //                 document.getElementById("id_form-"+rowindex+"-price").defaultValue = response.price;
-    //             },
-    //             error: function (xhr, status, error) {
-    //                 console.log(xhr.responseText);
-    //             }
-    //         })
-    //     });
-    // })
 </script>
 {% endblock %}

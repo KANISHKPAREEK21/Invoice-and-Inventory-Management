@@ -22,6 +22,8 @@ urlpatterns = [
     path('view_customer/', login_required(views.view_customer), name='view_customer'),
     path('edit_customer/<int:pk>', login_required(views.edit_customer), name='edit_customer'),
     path('delete_customer/<int:pk>/', login_required(views.delete_customer), name='delete_customer'),
+    path('customer_contact/<int:pk>/', views.customer_contact, name='customer_contact'),
+
     # end  for customer
 
     path('create_invoice/', login_required(views.create_invoice), name='create_invoice'),

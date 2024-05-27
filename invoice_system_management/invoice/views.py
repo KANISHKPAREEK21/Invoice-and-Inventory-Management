@@ -71,8 +71,8 @@ def download_all(request):
 
     }
     for curr in allInvoiceDetails:
-        invoice = Invoice.objects.get(id=curr.values()['id'])
-        product = Product.objects.get(id=curr.values()['product_id'])
+        invoice = Invoice.objects.get(id=curr.id)
+        product = Product.objects.get(id=curr.product_id)
         invoiceAndProduct["invoice_id"].append(invoice.id)
         invoiceAndProduct["invoice_date"].append(invoice.date)
         invoiceAndProduct["invoice_customer"].append(invoice.customer)

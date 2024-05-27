@@ -96,6 +96,9 @@ class InvoiceForm(forms.ModelForm):
             #     'placeholder': f'{Product.product_price}',
             # }),
         }
+    def __init__(self, *args, **kwargs):
+        super(InvoiceForm, self).__init__(*args, **kwargs)
+        self.fields['customer'].queryset = Customer.objects.filter(customer_is_delete=0)
 
 
 class InvoiceDetailForm(forms.ModelForm):
@@ -123,6 +126,9 @@ class InvoiceDetailForm(forms.ModelForm):
                 # 'placeholder': f'{Product.product_price}',
             }),
         }
+    def __init__(self, *args, **kwargs):
+        super(InvoiceDetailForm, self).__init__(*args, **kwargs)
+        self.fields['product'].queryset = Product.objects.filter(product_is_delete=0)
 
 class ExpenseForm(forms.ModelForm):
     class Meta:

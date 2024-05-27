@@ -2,7 +2,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 
 from utils.filehandler import handle_file_upload
-
+from openpyxl import load_workbook
 from pypdf import PdfReader 
     
 from .forms import *
@@ -64,29 +64,73 @@ def download_all(request):
         "invoice_contact": [],
         "invoice_comments": [],
         "product_name": [],
-        "product_price": [],
+        # "product_price": [],
         # "product_unit": [],
-        "product_amount": [],
+        # "product_amount": [], 
         "invoice_total": [],
 
     }
     for curr in allInvoiceDetails:
-        invoice = Invoice.objects.get(id=curr.id)
-        product = Product.objects.get(id=curr.product_id)
-        invoiceAndProduct["invoice_id"].append(invoice.id)
-        invoiceAndProduct["invoice_date"].append(invoice.date)
-        invoiceAndProduct["invoice_customer"].append(invoice.customer)
-        invoiceAndProduct["invoice_contact"].append(invoice.contact)
-        # invoiceAndProduct["invoice_email"].append(invoice.email)
-        invoiceAndProduct["invoice_comments"].append(invoice.comments)
-        invoiceAndProduct["product_name"].append(product.product_name)
-        invoiceAndProduct["product_price"].append(product.product_price)
-        # invoiceAndProduct["product_unit"].append(product.product_unit)
-        invoiceAndProduct["product_amount"].append(curr.amount)
-        invoiceAndProduct["invoice_total"].append(invoice.total)
+        invoice_detail_id = curr.id
+        amount = curr.amount
+        invoice_id = curr.invoice_id
+        # print(invoice_id)
+        product_id = curr.product_id
+        price = curr.price
+
+        invoice = Invoice.objects.filter(id = invoice_id)
+        for i in invoice:
+        # print(invoice['contact'])
+            date = i.date
+            customer_id = i.customer_id
+            customer_comments = i.comments
+            customer_contact = i.contact
+
+        customer = Customer.objects.filter(id = customer_id)
+        for i in customer:
+            customer_name = i.customer_name
+
+        product = Product.objects.filter(id = product_id)
+        for i in product:
+            product_name = i.product_name
+        # invoice = Invoice.objects.get(id=curr.id)
+        # product = Product.objects.get(id=curr.product_id)
+        # product = Product.objects.filter(id=curr.product_id)
+        invoiceAndProduct["invoice_id"].append(invoice_id)
+        invoiceAndProduct["invoice_date"].append(date)
+        invoiceAndProduct["invoice_customer"].append(customer_name)
+        invoiceAndProduct["invoice_contact"].append(customer_contact)
+        # # invoiceAndProduct["invoice_email"].append(invoice.email)
+        invoiceAndProduct["invoice_comments"].append(customer_comments)
+        invoiceAndProduct["product_name"].append(product_name)
+        # invoiceAndProduct["product_price"].append(product.product_price)
+        # # invoiceAndProduct["product_unit"].append(product.product_unit)
+        # invoiceAndProduct["product_amount"].append(curr.amount)
+        invoiceAndProduct["invoice_total"].append(price)
 
     df = pd.DataFrame(invoiceAndProduct)
-    df.to_excel("static/excel/allInvoices.xlsx", index=False)
+    df.to_excel("static/excel/allInvoices.xlsx", index=False, engine='openpyxl')
+
+    # Load the workbook and the worksheet
+    wb = load_workbook("static/excel/allInvoices.xlsx")
+    ws = wb.active
+
+    # Adjust column widths
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter  # Get the column name
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+
+    # Save the adjusted file
+    wb.save("static/excel/allInvoices.xlsx")
+
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="allInvoices.xlsx"'
     with open("static/excel/allInvoices.xlsx", "rb") as f:
@@ -109,7 +153,7 @@ def download_invoice_detail(request , pk):
     invoice = Invoice.objects.get(id=pk)
     print("---------------Id for invoice--------------",invoice)
 
-    invoice_detail = InvoiceDetail.objects.filter(invoice=invoice)
+    invoice_detail = InvoiceDetail.objects.filter(invoice_id=invoice)
     # if request.method == "POST":
         # invoice_detail.delete()
         # invoice.delete()
@@ -130,7 +174,8 @@ def download_invoice_detail(request , pk):
     # for curr in allInvoiceDetails:
         # invoice = Invoice.objects.get(id=pk)
     product = Product.objects.get(id= invoice_detail.all().values()[0]['product_id'])
-    invoiceAndProduct["invoice_id"].append(invoice.id)
+    print(product)
+    invoiceAndProduct["invoice_id"].append(invoice)
     invoiceAndProduct["invoice_date"].append(invoice.date)
     invoiceAndProduct["invoice_customer"].append(invoice.customer)
     invoiceAndProduct["invoice_contact"].append(invoice.contact)
@@ -146,7 +191,27 @@ def download_invoice_detail(request , pk):
 
     df = pd.DataFrame(invoiceAndProduct)
     print(df)
-    df.to_excel(f"static/excel/{str(invoice.customer)}.xlsx", index=False)
+    df.to_excel("static/excel/allInvoices.xlsx", index=False, engine='openpyxl')
+
+    # Load the workbook and the worksheet
+    wb = load_workbook("static/excel/allInvoices.xlsx")
+    ws = wb.active
+
+    # Adjust column widths
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter  # Get the column name
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+
+    # Save the adjusted file
+    wb.save("static/excel/allInvoices.xlsx")
 
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = f'attachment; filename="{str(invoice.customer)}.xlsx"'
@@ -295,12 +360,13 @@ def view_customer(request):
 
     customer = Customer.objects.filter(customer_is_delete=False)
     # customer = Customer.objects.all()
-    for i in customer:
+    for i in Customer.objects.all():
         income = 0 
         invoice = Invoice.objects.filter(customer=i.id)
         for j in invoice:
             income = income + j.total
         i.customer_amount = income
+        i.save()
 
     context = {
         "total_product": total_product,
@@ -380,6 +446,14 @@ def create_invoice(request):
             #     total += (total / 100) * 18
             invoice.total = total
             invoice.save()
+            
+            for i in Customer.objects.all():
+                income = 0 
+                invoice = Invoice.objects.filter(customer=i.id)
+                for j in invoice:
+                    income = income + j.total
+                i.customer_amount = income
+                i.save()
             return redirect("view_invoice")
 
     context = {

@@ -40,6 +40,7 @@ class CustomerForm(forms.ModelForm):
         fields = [
             'customer_name',
             'customer_contact',
+            'customer_amount',
         ]
         widgets = {
             'customer_name': forms.TextInput(attrs={

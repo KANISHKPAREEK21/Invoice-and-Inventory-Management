@@ -23,7 +23,7 @@ urlpatterns = [
     path('edit_customer/<int:pk>', login_required(views.edit_customer), name='edit_customer'),
     path('delete_customer/<int:pk>/', login_required(views.delete_customer), name='delete_customer'),
     path('customer_contact/<int:pk>/', views.customer_contact, name='customer_contact'),
-    path('customer_invoice_download/<int:pk>/', views.customer_invoice_download, name='customer_contact'),
+    path('customer_invoice_download/<int:pk>/', login_required(views.customer_invoice_download), name='customer_invoice_download'),
 
     # end  for customer
 

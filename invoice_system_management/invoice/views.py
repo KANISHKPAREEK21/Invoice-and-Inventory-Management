@@ -241,6 +241,120 @@ def download_invoice_detail(request , pk):
         response.write(f.read())
     return response
 
+@login_required
+def customer_invoice_download(request , pk):
+    customer_details = {
+        "customer_id":[],
+        "customer_name":[],
+        "customer_contact":[],
+        "invoice_id":[],
+        "invoice_date":[],
+        "invoice_total":[],
+        "product_id":[],
+        "product_name":[],
+        "product_price":[],
+        "product_unit":[],
+        "customer_total":[]
+    }
+    customer = Customer.objects.filter(id = pk)
+    customer_id = customer[0].id
+    customer_name = customer[0].customer_name
+    customer_contact = customer[0].customer_contact
+    customer_total = customer[0].customer_amount
+    # if cnt == 0:
+    customer_details["customer_id"].append(customer_id)
+    customer_details["customer_name"].append(customer_name)
+    customer_details["customer_contact"].append(customer_contact)
+    customer_details["customer_total"].append(customer_total)
+
+    invoices = Invoice.objects.filter(customer_id = customer_id)
+    for i in invoices:
+        invoice_id = i.id
+        invoice_date = i.date
+        invoice_total = i.total
+
+        customer_details["invoice_id"].append(invoice_id)
+        customer_details["invoice_date"].append(invoice_date)
+        customer_details["invoice_total"].append(invoice_total)
+
+        invoice_detail = InvoiceDetail.objects.filter(invoice_id = invoice_id)
+        cnt = 0
+        for p in invoice_detail:
+            product_id = p.product_id
+            product_price = p.price
+            product_unit = p.amount
+
+            customer_details["product_id"].append(product_id)
+            products = Product.objects.filter(id = product_id)
+            product_name = products[0].product_name
+
+            customer_details["product_name"].append(product_name)
+            customer_details["product_price"].append(product_price)
+            customer_details["product_unit"].append(product_unit)
+
+            if p != invoice_detail[len(invoice_detail) - 1]:
+                customer_details["customer_id"].append("")
+                customer_details["customer_name"].append("")
+                customer_details["customer_contact"].append("")
+                customer_details["customer_total"].append("")
+
+                customer_details["invoice_id"].append("")
+                customer_details["invoice_date"].append("")
+                customer_details["invoice_total"].append("")
+
+
+            customer_details["customer_id"].append("")
+            customer_details["customer_name"].append("")
+            customer_details["customer_contact"].append("")
+            customer_details["customer_total"].append("")
+
+            customer_details["invoice_id"].append("")
+            customer_details["invoice_date"].append("")
+            customer_details["invoice_total"].append("")
+
+            customer_details["product_id"].append("")
+            customer_details["product_name"].append("")
+            customer_details["product_price"].append("")
+            customer_details["product_unit"].append("")
+
+
+        if i != invoices[len(invoices) - 1]:
+            customer_details["customer_id"].append("")
+            customer_details["customer_name"].append("")
+            customer_details["customer_contact"].append("")
+            customer_details["customer_total"].append("")
+
+    print(customer_details)
+    df = pd.DataFrame(customer_details)
+    print(df)
+    df.to_excel("static/excel/customer.xlsx", index=False, engine='openpyxl')
+
+    # Load the workbook and the worksheet
+    wb = load_workbook("static/excel/customer.xlsx")
+    ws = wb.active
+
+    # Adjust column widths
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter  # Get the column name
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+
+    # Save the adjusted file
+    wb.save("static/excel/customer.xlsx")
+
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="customer.xlsx"'
+    with open(f"static/excel/customer.xlsx", "rb") as f:
+        response.write(f.read())
+    return response
+
 # @login_required
 # def delete_all_invoice(request):
 #     # Delete all invoice
@@ -651,10 +765,6 @@ def delete_customer(request, pk):
 
     return render(request, "invoice/delete_customer.html", context)
         # this is commented
-
-@login_required
-def customer_invoice_download(request , pk):
-    print()
 
 # Edit product
 @login_required

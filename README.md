@@ -1,5 +1,5 @@
 # Invoice-and-Inventory-Management
-![Project Screenshot]((https://github.com/KANISHKPAREEK21/Invoice-and-Inventory-Management/blob/main/web%20screenshots/Add_payment.png))
+![Project Screenshot](https://github.com/KANISHKPAREEK21/Invoice-and-Inventory-Management/blob/main/web%20screenshots/Add_payment.png)
 The screenshots of other pages are [HERE](https://github.com/KANISHKPAREEK21/Invoice-and-Inventory-Management/tree/main/web%20screenshots)
 
 ## Table of Contents

@@ -1,0 +1,272 @@
+{% extends "invoice/base/base.html" %}
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{% block content %}
+
+<div class="row" class="pull-right"
+    style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%; margin-left: 0px;">
+    <i class="glyphicon glyphicon-calendar fa fa-calendar" style="width: 3%;"></i>
+    <input type="text" name="daterange" style="border: none; width: 97%; cursor: pointer; height: 100%; color: #999999;"
+        readonly />
+</div>
+
+<div class="row">
+    <!-- Area Chart -->
+    <div class="col-xl-12 col-lg-7">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <label class="m-0 font-weight-bold text-primary">Payments</label>
+
+                <div style="display: flex; gap: 5vw;">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault" style="color: black;">SBI</label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+                        <label class="form-check-label" for="flexCheckChecked" style="color: black;">ICICI</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Bank</th>
+                                <th>Amount</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            {% for i in payment %}
+                            <tr>
+                                <td style="padding: 0.45em;">{{ forloop.counter }}</td>
+                                <td style="padding: 0.45em;">{{i.date}}</td>
+                                <td style="padding: 0.45em;">{{i.Bank_name}}</td>
+                                <td style="padding: 0.45em;">{{i.Payment_cost}}</td>
+                                <!-- <td style="padding: 0.45em;">{{i.product_unit}}</td> -->
+
+                                <td style="padding: 0;">
+                                    <a href="{% url 'delete_payment' i.id %}" class="btn btn-outline-danger"
+                                        style="width: 100%; height: 100%; border-radius: 0">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+
+                        <tfoot>
+                            <tr>
+                                <td id="total_payment"></td>
+                                <td id="dateRange"></td>
+                                <td>Total</td>
+                                <td id="total_payment_cost">{{total}}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var table_id = $('#dataTable tr').length - 2;
+    console.log(table_id)
+    $('#total_payment').html(table_id)
+
+    // $(document).ready(function(){
+    //     $('#total_title').html("Total payment")
+    //     var sum = sum()
+    //     $.ajax({
+    //         url:''
+    //     })
+    // })
+</script>
+
+<script>
+    $('input[name="daterange"]').daterangepicker();
+    // $('#daterange').daterangepicker();
+    var startDate = '';
+    var endDate = '';
+    $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
+        // console.log(picker.startDate.format('YYYY-MM-DD'));
+        startDate = picker.startDate.format('YYYY-MM-DD')
+        // console.log(picker.endDate.format('YYYY-MM-DD'));
+        endDate = picker.endDate.format('YYYY-MM-DD')
+
+        // $('#startDate').html(startDate)
+        // $('#endDate').html(endDate)
+        // $('.dates').attr('style','visibility:visible')
+        $('#dateRange').html(startDate + ' to ' + endDate)
+
+        filterRows(startDate, endDate)
+        // sum()
+    });
+
+
+    function filterRows(startDate, endDate) {
+        selectedStartDate = new Date(startDate)
+        selectedEndDate = new Date(endDate)
+
+        startDate = selectedStartDate.getDate();
+        endDate = selectedEndDate.getDate();
+        var startMonth = selectedStartDate.getMonth() + 1;
+        var endMonth = selectedEndDate.getMonth() + 1;
+        var startYear = selectedStartDate.getFullYear();
+        var endYear = selectedEndDate.getFullYear();
+        // console.log(startDate,startMonth,startYear,endDate,endMonth,endYear)
+
+        if (startDate == endDate) {
+            endDate = startDate;
+        }
+        var tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
+        for (var i = 0; i < tableRows.length; i++) {
+            var rowDate = tableRows[i].getElementsByTagName('td')[1].innerText;
+
+            var dateObj = new Date(rowDate);
+            var tableDate = dateObj.getDate();
+            var tableMonth = dateObj.getMonth() + 1;
+            var tableYear = dateObj.getFullYear();
+            // console.log(tableDate,tableMonth,tableYear)
+
+            if (tableYear >= startYear && tableYear <= endYear) {
+                if (tableMonth >= startMonth && tableMonth <= endMonth) {
+                    if (tableDate >= startDate && tableDate <= endDate) {
+                        tableRows[i].style.display = '';
+                    } else {
+                        tableRows[i].style.display = 'none';
+                    }
+                }
+                else {
+                    tableRows[i].style.display = 'none';
+                }
+            } else {
+                tableRows[i].style.display = 'none';
+            }
+        }
+    }
+</script>
+<script>
+    $('#flexCheckDefault').click(function () {
+        var tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
+        const icici = document.getElementById('flexCheckChecked').checked;
+        const sbi = document.getElementById('flexCheckDefault').checked;
+        if (icici == true && sbi == true) {
+            var tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
+            for (var i = 0; i < tableRows.length; i++) {
+                var bankName = tableRows[i].getElementsByTagName('td')[2].innerText;
+
+                // console.log(tableDate,tableMonth,tableYear)
+                if (bankName === 'ICICI' || bankName == 'SBI') {
+                    tableRows[i].style.display = '';
+                } else {
+                    tableRows[i].style.display = 'none';
+                }
+
+            }
+        } else if (sbi == true) {
+            var tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
+            for (var i = 0; i < tableRows.length; i++) {
+                var bankName = tableRows[i].getElementsByTagName('td')[2].innerText;
+
+                // console.log(tableDate,tableMonth,tableYear)
+                if (bankName === 'SBI') {
+                    tableRows[i].style.display = '';
+                } else {
+                    tableRows[i].style.display = 'none';
+                }
+            }
+        } else if (icici == true) {
+            var tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
+            for (var i = 0; i < tableRows.length; i++) {
+                var bankName = tableRows[i].getElementsByTagName('td')[2].innerText;
+
+                // console.log(tableDate,tableMonth,tableYear)
+                if (bankName === 'ICICI') {
+                    tableRows[i].style.display = '';
+                } else {
+                    tableRows[i].style.display = 'none';
+                }
+            }
+        } else {
+            var tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
+            for (var i = 0; i < tableRows.length; i++) {
+                var bankName = tableRows[i].getElementsByTagName('td')[2].innerText;
+                // console.log(tableDate,tableMonth,tableYear)
+                tableRows[i].style.display = '';
+            }
+        }
+    })
+
+    $('#flexCheckChecked').click(function () {
+        var tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
+        const icici = document.getElementById('flexCheckChecked').checked;
+        const sbi = document.getElementById('flexCheckDefault').checked;
+        if (icici == true && sbi == true) {
+            var tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
+            for (var i = 0; i < tableRows.length; i++) {
+                var bankName = tableRows[i].getElementsByTagName('td')[2].innerText;
+
+                // console.log(tableDate,tableMonth,tableYear)
+                if (bankName === 'ICICI' || bankName == 'SBI') {
+                    tableRows[i].style.display = '';
+                } else {
+                    tableRows[i].style.display = 'none';
+                }
+            }
+        } else if (sbi == true) {
+            var tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
+            for (var i = 0; i < tableRows.length; i++) {
+                var bankName = tableRows[i].getElementsByTagName('td')[2].innerText;
+
+                // console.log(tableDate,tableMonth,tableYear)
+                if (bankName === 'SBI') {
+                    tableRows[i].style.display = '';
+                } else {
+                    tableRows[i].style.display = 'none';
+                }
+            }
+        } else if (icici == true) {
+            var tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
+            for (var i = 0; i < tableRows.length; i++) {
+                var bankName = tableRows[i].getElementsByTagName('td')[2].innerText;
+
+                // console.log(tableDate,tableMonth,tableYear)
+
+                if (bankName === 'ICICI') {
+                    tableRows[i].style.display = '';
+                } else {
+                    tableRows[i].style.display = 'none';
+                }
+            }
+        } else {
+            var tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
+            for (var i = 0; i < tableRows.length; i++) {
+                var bankName = tableRows[i].getElementsByTagName('td')[2].innerText;
+                // console.log(tableDate,tableMonth,tableYear)
+                tableRows[i].style.display = '';
+            }
+        }
+    })
+
+    // const icici = document.getElementById('flexCheckChecked').checked;
+    // const sbi = document.getElementById('flexCheckDefault').checked;
+    // console.log(icici);
+    // console.log(sbi);
+
+</script>
+{% endblock %}

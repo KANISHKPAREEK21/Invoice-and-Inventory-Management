@@ -1,0 +1,163 @@
+{% extends "invoice/base/base.html" %}
+<!-- Content Row -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
+
+{% block content %}
+<div class="row" class="pull-right"
+    style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%; margin-left: 0px;">
+    <i class="glyphicon glyphicon-calendar fa fa-calendar" style="width: 3%;"></i>
+    <input type="text" name="daterange" style="border: none; width: 97%; cursor: pointer; height: 100%; color: #999999;" readonly />
+</div>
+<div class="row">
+    <!-- Area Chart -->
+    <div class="col-xl-12 col-lg-7">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <label class="m-0 font-weight-bold text-primary">Invoices</label>
+                <div class="dates" style="visibility: hidden;">
+                    <label for="startDate" id="startDate"></label>
+                    <label for="dash">-</label>
+                    <label for="endDate" id="endDate"></label>
+                </div>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <!-- <th>ID</th> -->
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Detail</th>
+                                <th>Delete</th>
+                                <th>Download</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            {% for i in invoice %}
+                            <tr>
+                                <!-- <td style="padding: 0.45em;">
+                                {{i}}+1
+                            </td> -->
+                                <td style="padding: 0.45em; width: 16%;">
+                                    {{i.date}}
+                                </td>
+                                <td style="padding: 0.45em; width: 20%;">
+                                    {{i.customer}}
+                                </td>
+                                <td style="padding: 0.45em; width: 16%;">
+                                    {{i.total}}
+                                </td>
+                                <td style="padding: 0; width: 16%;">
+                                    <a href="{% url 'view_invoice_detail' i.id %}" class="btn btn-outline-primary"
+                                        style="width: 100%; height: 100%; border-radius: 0">
+                                        <i class="fas fa-long-arrow-alt-right"></i>
+                                    </a>
+                                </td>
+                                <td style="padding: 0; width: 16%;">
+                                    <a href="{% url 'delete_invoice' i.id %}" class="btn btn-outline-danger"
+                                        style="width: 100%; height: 100%; border-radius: 0">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                                <td style="padding: 0; width: 16%;">
+                                    <a href="{% url 'download_invoice_detail' i.id %}" class="btn btn-outline-primary"
+                                        style="width: 100%; height: 100%; border-radius: 0">
+                                        <i class="fas fa-long-arrow-alt-down"></i>
+                                    </a>
+                                </td>
+                                {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('input[name="daterange"]').daterangepicker();
+    var startDate = '';
+    var endDate = '';
+    $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
+        // console.log(picker.startDate.format('YYYY-MM-DD'));
+        startDate = picker.startDate.format('YYYY-MM-DD')
+        // console.log(picker.endDate.format('YYYY-MM-DD'));
+        endDate = picker.endDate.format('YYYY-MM-DD')
+
+        $('#startDate').html(startDate)
+        $('#endDate').html(endDate)
+        $('.dates').attr('style', 'visibility:visible')
+
+        filterRows(startDate, endDate)
+        sum()
+    });
+
+
+    function filterRows(startDate, endDate) {
+        selectedStartDate = new Date(startDate)
+        selectedEndDate = new Date(endDate)
+
+        startDate = selectedStartDate.getDate();
+        endDate = selectedEndDate.getDate();
+        var startMonth = selectedStartDate.getMonth()+1;
+        var endMonth = selectedEndDate.getMonth()+1;
+        var startYear = selectedStartDate.getFullYear();
+        var endYear = selectedEndDate.getFullYear();
+
+        if (startDate == endDate) {
+            endDate = startDate;
+        }
+        var tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
+        for (var i = 0; i < tableRows.length; i++) {
+            var rowDate = tableRows[i].getElementsByTagName('td')[0].innerText;
+
+            var dateObj = new Date(rowDate);
+            var tableDate = dateObj.getDate();
+            var tableMonth = dateObj.getMonth()+1;
+            var tableYear = dateObj.getFullYear();
+
+            if(tableYear >= startYear && tableYear <= endYear){
+                if(tableMonth >= startMonth && tableMonth <= endMonth){
+                    if(tableDate >= startDate && tableDate <= endDate){
+                        tableRows[i].style.display = '';
+                    }else{
+                        tableRows[i].style.display = 'none';
+                    }
+                }
+                else{
+                    tableRows[i].style.display = 'none';
+                }
+            }else{
+                tableRows[i].style.display = 'none';
+            }
+        }
+    }
+    function sum() {
+        var total_income = 0;
+        var rows = document.getElementById('tableBody').getElementsByTagName('tr');
+        var cnt = 0;
+        for (var i = 0; i < rows.length; i++) {
+            // console.log(rows[i].style.display)
+            if (rows[i].style.display != 'none') {
+                // console.log(cnt);
+                cnt++;
+                var curr = parseFloat(rows[i].getElementsByTagName('td')[2].innerText);
+                // console.log(curr);
+                total_income += curr;
+            }
+        }
+        // console.log(total_income)
+        $('#total_income').html(total_income.toFixed(2));
+    }
+</script>
+
+{% endblock %}

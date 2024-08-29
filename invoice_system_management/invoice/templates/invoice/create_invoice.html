@@ -1,0 +1,182 @@
+{% extends "invoice/base/base.html" %}
+<!-- Content Row -->
+{% block content %}
+<div class="row">
+    <!-- Area Chart -->
+    <div class="col-xl-12 col-lg-7">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <label class="m-0 font-weight-bold text-primary">Create invoice</label>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label" for="invoice_customer" id="customer_name">Customer name</label>
+                        {{form.customer}}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="invoice_contact">Contact</label>
+                        {{form.contact}}
+                    </div>
+                    <div class="mb-3" style="display: flex; width: 100%;">
+                        <div style="width: 65%;"><label class="form-label" for="invoice_comments">Comments</label>
+                            {{form.comments}}
+                        </div>
+
+                        <div style="width: 30%; text-align: center; "><label class="form-label"
+                                for="invoice_gst">GST</label>
+                            {{form.gst}}
+                        </div>
+                    </div>
+                    <!-- <div style="border: 0; padding: 0 0.5em 0 0; width: 20%">
+                        <label class="form-label" for="invoice_detail_price">Product Price</label>
+                        <label class="form-label" for="invoice_detail_rupee">(&#8377;)</label>
+                        <input type="number" id="id_form-{{forloop.counter0}}-price" class="form-control"
+                            name="form-{{forloop.counter}}-price">
+                            {{form.price}}
+                        </div> -->
+
+
+                    {{ formset.management_form }}
+                    <div class="table">
+                        <table class="table" id="table">
+                            {% for form in formset %}
+                            <tr id="tableRow">
+                                <td style="border: 0; padding: 0 0.5em 0 0; width: 80%">
+                                    <label class="form-label" for="invoice_detail_product">Product name</label>
+                                    {{form.product}}
+                                </td>
+                                <!-- <td style="border: 0; padding: 0 0.5em 0 0; width: 20%">
+                                    <label class="form-label" for="invoice_detail_price">Product Price</label>
+                                    <label for="rupee">(&#8377;)</label>
+                                    {{product_form.product_price}}
+                                </td> -->
+                                <td style="border: 0; padding: 0 0.5em 0 0; width: 20%">
+                                    <label class="form-label" for="invoice_detail_price">Product Price</label>
+                                    <label class="form-label" for="invoice_detail_rupee">(&#8377;)</label>
+                                    <!-- <input type="number" id="id_form-{{forloop.counter0}}-price" class="form-control"
+                                        name="form-{{forloop.counter}}-price"> -->
+                                        {{form.price}}
+                                </td>
+                                <td style="border: 0; padding: 0 0 0 0.5em;">
+                                    <label class="form-label" for="invoice_detail_amount">Amounts</label>
+                                    {{form.amount}}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <div class="mb-3 d-flex justify-content-center">
+                        <input class="btn btn-outline-warning add-form-row" style="margin: 0 1em 0 1em; width: 40%"
+                            type="button" value="Add more product" id="add_more">
+                        <input class="btn btn-outline-success" style="margin: 0 1em 0 1em; width: 40%" type="submit"
+                            name="create-invoice">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block custom_js %}
+<script>
+    function cloneMore(selector, type) {
+        var newElement = $(selector).clone(true);
+        var total = $('#id_' + type + '-TOTAL_FORMS').val();
+        newElement.find(':input').each(function () {
+            var name = $(this).attr('name').replace('-' + (total - 1) + '-', '-' + total + '-');
+            var id = 'id_' + name;
+            $(this).attr({ 'name': name, 'id': id }).val('').removeAttr('checked');
+            $(this).val(1);
+        });
+        newElement.find('label').each(function () {
+            var newFor = $(this).attr('for').replace('-' + (total - 1) + '-', '-' + total + '-');
+            $(this).attr('for', newFor);
+        });
+        total++;
+        $('#id_' + type + '-TOTAL_FORMS').val(total);
+        $(selector).after(newElement);
+
+        // Rebind the change event to the newly added dropdown
+        bindProductDropdownChangeEvent(newElement.find('.product-dropdown'));
+    }
+
+    $('#add_more').click(function () {
+        // cloneMore('tr.form-row:last', 'form');
+        cloneMore('table:last', 'form');
+    });
+
+    // Function to get the CSRF token from the cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    // Set up AJAX to include the CSRF token
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+    function bindProductDropdownChangeEvent(element) {
+        element.change(function () {
+            var product_id = $(this).val();
+            var priceField = $(this).closest('tr').find('.form-control[id^="id_form-"][id$="-price"]');
+
+            console.log("ID: ",product_id)
+            console.log("\nPrice Field: ", priceField)
+
+            $.ajax({
+                url: '/product_price/' + product_id + '/',
+                type: 'POST',
+                success: function (data) {
+                    priceField.val(data.price);
+                }
+            });
+        });
+    }
+
+    function bindCustomerDropdownChangeEvent(element) {
+        element.change(function () {
+            var customer_id = $(this).val();
+            // var customerField = $(this).find('.form-control[id="invoice_contact"]');
+            var customerField = $("#invoice_contact");
+
+            console.log("ID: ",customer_id)
+            console.log("\nCustomer Field: ", customerField)
+
+            $.ajax({
+                url: '/customer_contact/' + customer_id + '/',
+                type: 'POST',
+                success: function (data) {
+                    customerField.val(data.contact);
+                }
+            });
+        });
+    }
+
+    $(document).ready(function () {
+        bindProductDropdownChangeEvent($('.product-dropdown'));
+        bindCustomerDropdownChangeEvent($('.customer-dropdown'));
+    });
+</script>
+{% endblock %}

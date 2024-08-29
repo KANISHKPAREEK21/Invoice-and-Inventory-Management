@@ -1,0 +1,32 @@
+{% extends "invoice/base/base.html" %}
+
+{% block content %}
+<div class="row">
+    <!-- Area Chart -->
+    <div class="col-xl-12 col-lg-7">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <label class="m-0 font-weight-bold text-primary">Select Payment</label>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label" for="payment_name">Payment name</label>
+                        {{payment.Bank_name}}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="Price">Amount</label>
+                        {{payment.Payment_cost}}
+                    </div>
+                    <div class="mb-3">
+                        <input class="btn btn-info" type="submit" name="Create payment">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

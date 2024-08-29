@@ -1,10 +1,10 @@
 # Invoice-and-Inventory-Management
-![Project Screenshot](link-to-screenshot)
-The screenshots of other pages are here[] 
+![Project Screenshot]((https://github.com/KANISHKPAREEK21/Invoice-and-Inventory-Management/blob/main/web%20screenshots/Add_payment.png))
+The screenshots of other pages are [HERE](https://github.com/KANISHKPAREEK21/Invoice-and-Inventory-Management/tree/main/web%20screenshots)
 
 ## Table of Contents
 
-1. [About the Project](#about-the-project)
+1. [Overview](#overview)
 2. [Features](#features)
 3. [Technologies Used](#technologies-used)
 4. [Installation](#installation)
